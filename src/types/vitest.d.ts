@@ -1,7 +1,7 @@
 // src/types/vitest.d.ts
 /// <reference types="vitest" />
 
-declare module "vitest" {
+declare module 'vitest' {
   interface Assertion {
     toEqualWithDates(expected: any): void;
   }

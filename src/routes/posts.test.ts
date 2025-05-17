@@ -1,4 +1,4 @@
-// @ts-ignore - Vitest最新バージョンでのインポート
+// @ts-expect-error - Vitest最新バージョンでのインポート
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { postRoutes } from './posts';
 import prisma from '../lib/prisma';

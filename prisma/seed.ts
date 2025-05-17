@@ -27,7 +27,7 @@ async function main() {
   console.log(`Created users: ${user1.name}, ${user2.name}`);
 
   // Create posts
-  const post1 = await prisma.post.create({
+  const _post1 = await prisma.post.create({
     data: {
       title: 'Hello PostgreSQL',
       content: 'This is my first post with PostgreSQL and Prisma',
@@ -36,7 +36,7 @@ async function main() {
     },
   });
 
-  const post2 = await prisma.post.create({
+  const _post2 = await prisma.post.create({
     data: {
       title: 'Advanced PostgreSQL Features',
       content: 'Exploring JSON, indexing, and more...',
@@ -45,7 +45,7 @@ async function main() {
     },
   });
 
-  const post3 = await prisma.post.create({
+  const _post3 = await prisma.post.create({
     data: {
       title: 'Draft Post',
       content: 'This is an unpublished draft',

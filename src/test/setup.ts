@@ -1,22 +1,17 @@
 import { PrismaClient } from '@prisma/client';
 
 // 実際にテストは動作しているので、型エラーは無視します
-// @ts-ignore
 import { beforeEach, afterEach, expect, vi } from 'vitest';
 
 // カスタムマッチャーを追加して日付の比較問題を解決
 declare global {
-  namespace Vi {
-    interface Assertion {
-      toEqualWithDates(expected: any): void;
-    }
+  interface ViAssertion {
+    toEqualWithDates(expected: any): void;
   }
   
-  // Vitestの最新バージョン用の型定義も追加
-  namespace Vitest {
-    interface Assertion {
-      toEqualWithDates(expected: any): void;
-    }
+  // Vitestの最新バージョン用の型定義
+  interface VitestAssertion {
+    toEqualWithDates(expected: any): void;
   }
 }
 

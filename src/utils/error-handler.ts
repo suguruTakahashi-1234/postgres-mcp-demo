@@ -12,10 +12,12 @@ export const handleError = (c: Context, error: unknown, defaultMessage: string, 
   console.error(defaultMessage, error);
   
   if (isPrismaError(error) && error.code === 'P2002') {
-    return c.json({ message: 'このデータは既に存在します。一意の値を指定してください。' }, 400);
+    const response: ErrorResponse = { message: 'このデータは既に存在します。一意の値を指定してください。' };
+    return c.json(response, 400);
   }
   
-  return c.json({ message: defaultMessage }, status);
+  const response: ErrorResponse = { message: defaultMessage };
+  return c.json(response, status);
 };
 
 /**

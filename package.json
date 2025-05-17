@@ -1,0 +1,50 @@
+{
+  "name": "postgres-restful-api",
+  "version": "0.1.0",
+  "description": "A minimalist RESTful API with PostgreSQL, Hono, and Prisma",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint . --ext .ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "db:ready": "docker-compose up -d postgres && ./scripts/wait-for-postgres.sh localhost 5432 'echo PostgreSQL is ready'",
+    "setup:db": "pnpm db:ready && pnpm prisma:migrate && pnpm db:seed",
+    "reset:db": "docker-compose down -v postgres && pnpm setup:db",
+    "dev:test": "pnpm setup:db && pnpm test",
+    "dev:start": "PORT=3001 pnpm dev",
+    "check:port": "./scripts/check-port.sh 3001",
+    "free:port": "./scripts/check-port.sh 3001 --kill",
+    "dev:local": "pnpm check:port || (pnpm free:port && PORT=3001 pnpm dev)",
+    "dev:clean": "pnpm reset:db && pnpm dev:local"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "@hono/swagger-ui": "^0.3.0",
+    "@hono/zod-openapi": "^0.13.0",
+    "@prisma/client": "^5.22.0",
+    "hono": "^3.12.12",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.47",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "@vitest/coverage-v8": "^1.6.1",
+    "eslint": "^9.1.0",
+    "prisma": "^5.22.0",
+    "tsx": "^4.7.1",
+    "typescript": "^5.5.0",
+    "vitest": "^1.6.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

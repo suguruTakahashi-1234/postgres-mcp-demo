@@ -78,6 +78,58 @@ docker-compose down -v
 - テスト用データベース（デフォルト: `mcp_test`）
 - `test_table` テーブル（いくつかのサンプルデータ付き）
 
+## 接続方法
+
+### コマンドラインからの接続
+
+PostgreSQLコンテナ内のpsqlクライアントを使用して接続する：
+
+```bash
+# デフォルトデータベースに接続
+docker-compose exec postgres psql -U postgres
+
+# テストデータベースに接続
+docker-compose exec postgres psql -U mcp_user -d mcp_test
+```
+
+ローカルにpsqlクライアントがインストールされている場合：
+
+```bash
+# デフォルトデータベースに接続
+psql -h localhost -p 5432 -U postgres
+
+# テストデータベースに接続
+psql -h localhost -p 5432 -U mcp_user -d mcp_test
+```
+
+### GUIツールからの接続
+
+以下のGUIツールを使用して接続することもできます：
+
+1. **pgAdmin 4**
+   - ホスト: localhost
+   - ポート: 5432
+   - ユーザー名: postgres または mcp_user
+   - パスワード: .envファイルで設定した値
+   - データベース: postgres または mcp_test
+
+2. **DBeaver**
+   - 新しい接続を作成 → PostgreSQL
+   - ホスト: localhost
+   - ポート: 5432
+   - データベース: postgres または mcp_test
+   - ユーザー名: postgres または mcp_user
+   - パスワード: .envファイルで設定した値
+
+3. **TablePlus**
+   - 新しい接続 → PostgreSQL
+   - 名前: PostgreSQL MCP Demo
+   - ホスト: localhost
+   - ポート: 5432
+   - ユーザー: postgres または mcp_user
+   - パスワード: .envファイルで設定した値
+   - データベース: postgres または mcp_test
+
 ## MCPでの接続テスト
 
 このサービスはMCP環境での接続テストに使用できます。異なるクラウドプラットフォームからこのPostgreSQLインスタンスに接続し、接続性と機能をテストすることができます。

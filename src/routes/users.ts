@@ -1,4 +1,4 @@
-import { OpenAPIHono } from '@hono/zod-openapi';
+import { OpenAPIHono, Context } from '@hono/zod-openapi';
 import {
   getUsersRoute,
   getUserRoute,
@@ -7,12 +7,13 @@ import {
   deleteUserRoute,
 } from '../schemas/user.schema';
 import prisma from '../lib/prisma';
+import { handleError } from '../utils/error-handler';
 
 // Create the users router
 export const userRoutes = new OpenAPIHono();
 
 // GET /users - Get all users
-userRoutes.openapi(getUsersRoute, async (c) => {
+userRoutes.openapi(getUsersRoute, async (c: Context) => {
   try {
     const users = await prisma.user.findMany({
       include: { _count: { select: { posts: true } } },
@@ -20,13 +21,12 @@ userRoutes.openapi(getUsersRoute, async (c) => {
     
     return c.json(users);
   } catch (error: unknown) {
-    console.error('Error fetching users:', error);
-    return c.json({ message: 'Failed to fetch users' }, 500);
+    return handleError(c, error, 'ユーザー情報の取得に失敗しました');
   }
 });
 
 // GET /users/:id - Get a user by ID
-userRoutes.openapi(getUserRoute, async (c) => {
+userRoutes.openapi(getUserRoute, async (c: Context) => {
   const { id } = c.req.valid('param');
 
   try {
@@ -36,18 +36,17 @@ userRoutes.openapi(getUserRoute, async (c) => {
     });
 
     if (!user) {
-      return c.json({ message: 'User not found' }, 404);
+      return c.json({ message: 'ユーザーが見つかりません' }, 404);
     }
     
     return c.json(user);
   } catch (error: unknown) {
-    console.error(`Error fetching user ${id}:`, error);
-    return c.json({ message: 'Failed to fetch user' }, 500);
+    return handleError(c, error, `ユーザー ${id} の取得に失敗しました`);
   }
 });
 
 // POST /users - Create a new user
-userRoutes.openapi(createUserRoute, async (c) => {
+userRoutes.openapi(createUserRoute, async (c: Context) => {
   const data = c.req.valid('json');
 
   try {
@@ -57,17 +56,19 @@ userRoutes.openapi(createUserRoute, async (c) => {
 
     return c.json(newUser, 201);
   } catch (error: unknown) {
-    console.error('Error creating user:', error);
-    // Check if this is a unique constraint violation
-    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
-      return c.json({ message: 'A user with this email already exists' }, 400);
+    if (isPrismaError(error) && error.code === 'P2002') {
+      return c.json({ message: 'このメールアドレスは既に使用されています' }, 400);
     }
-    return c.json({ message: 'Failed to create user' }, 500);
+    return handleError(c, error, 'ユーザーの作成に失敗しました');
   }
 });
 
+const isPrismaError = (error: unknown): error is { code: string } => {
+  return typeof error === 'object' && error !== null && 'code' in error;
+};
+
 // PATCH /users/:id - Update a user
-userRoutes.openapi(updateUserRoute, async (c) => {
+userRoutes.openapi(updateUserRoute, async (c: Context) => {
   const { id } = c.req.valid('param');
   const data = c.req.valid('json');
 
@@ -78,7 +79,7 @@ userRoutes.openapi(updateUserRoute, async (c) => {
     });
 
     if (!userExists) {
-      return c.json({ message: 'User not found' }, 404);
+      return c.json({ message: 'ユーザーが見つかりません' }, 404);
     }
 
     const updatedUser = await prisma.user.update({
@@ -88,16 +89,15 @@ userRoutes.openapi(updateUserRoute, async (c) => {
 
     return c.json(updatedUser);
   } catch (error: unknown) {
-    console.error(`Error updating user ${id}:`, error);
-    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
-      return c.json({ message: 'Email address already in use' }, 400);
+    if (isPrismaError(error) && error.code === 'P2002') {
+      return c.json({ message: 'このメールアドレスは既に使用されています' }, 400);
     }
-    return c.json({ message: 'Failed to update user' }, 500);
+    return handleError(c, error, `ユーザー ${id} の更新に失敗しました`);
   }
 });
 
 // DELETE /users/:id - Delete a user
-userRoutes.openapi(deleteUserRoute, async (c) => {
+userRoutes.openapi(deleteUserRoute, async (c: Context) => {
   const { id } = c.req.valid('param');
 
   try {
@@ -107,7 +107,7 @@ userRoutes.openapi(deleteUserRoute, async (c) => {
     });
 
     if (!userExists) {
-      return c.json({ message: 'User not found' }, 404);
+      return c.json({ message: 'ユーザーが見つかりません' }, 404);
     }
 
     // Delete the user
@@ -115,9 +115,8 @@ userRoutes.openapi(deleteUserRoute, async (c) => {
       where: { id },
     });
 
-    return c.json({ message: 'User deleted successfully' });
+    return c.json({ message: 'ユーザーが正常に削除されました' });
   } catch (error: unknown) {
-    console.error(`Error deleting user ${id}:`, error);
-    return c.json({ message: 'Failed to delete user' }, 500);
+    return handleError(c, error, `ユーザー ${id} の削除に失敗しました`);
   }
 });

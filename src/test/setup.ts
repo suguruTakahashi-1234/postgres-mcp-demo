@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client/edge.js';
+import { PrismaClient } from '@prisma/client';
 
 // 実際にテストは動作しているので、型エラーは無視します
 // @ts-ignore

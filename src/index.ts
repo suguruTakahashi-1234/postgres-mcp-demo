@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
 import { swaggerUI } from '@hono/swagger-ui';
-import { OpenAPIHono } from '@hono/zod-openapi';
+import { OpenAPIHono, Context } from '@hono/zod-openapi';
 import { userRoutes } from './routes/users';
 import { postRoutes } from './routes/posts';
 
@@ -23,7 +23,7 @@ api.route('/posts', postRoutes);
 app.get('/docs/*', swaggerUI({ url: '/docs/openapi.json' }));
 
 // Generate OpenAPI documentation
-app.get('/docs/openapi.json', (c) => {
+app.get('/docs/openapi.json', (c: Context) => {
   return c.json(api.getOpenAPIDocument({
     openapi: '3.0.0',
     info: {
@@ -39,7 +39,7 @@ app.get('/docs/openapi.json', (c) => {
 app.route('/api', api);
 
 // Health check endpoint
-app.get('/', (c) => c.json({ status: 'ok', message: 'PostgreSQL RESTful API is running' }));
+app.get('/', (c: Context) => c.json({ status: 'ok', message: 'PostgreSQL RESTful API is running' }));
 
 // Start the server
 const port = parseInt(process.env.PORT || '3000');

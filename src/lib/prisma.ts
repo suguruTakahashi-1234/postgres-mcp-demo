@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client/edge.js';
+import { PrismaClient } from '@prisma/client';
 
 // シングルトンインスタンスを作成（Prisma v6対応）
 const prismaClientSingleton = () => {

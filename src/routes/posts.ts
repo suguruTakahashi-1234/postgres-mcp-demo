@@ -1,4 +1,4 @@
-import { OpenAPIHono } from '@hono/zod-openapi';
+import { OpenAPIHono, Context } from '@hono/zod-openapi';
 import {
   getPostsRoute,
   getPostRoute,
@@ -7,17 +7,18 @@ import {
   deletePostRoute,
 } from '../schemas/post.schema';
 import prisma from '../lib/prisma';
+import { handleError } from '../utils/error-handler';
 
 // Create the posts router
 export const postRoutes = new OpenAPIHono();
 
 // GET /posts - Get all posts with optional filtering
-postRoutes.openapi(getPostsRoute, async (c: any) => {
+postRoutes.openapi(getPostsRoute, async (c: Context) => {
   const { published, authorId } = c.req.valid('query');
   
   try {
     // Build filters with proper typing
-    const where: Record<string, any> = {};
+    const where: Record<string, unknown> = {};
     
     if (published !== undefined) {
       where.published = published === 'true';
@@ -34,14 +35,13 @@ postRoutes.openapi(getPostsRoute, async (c: any) => {
     });
     
     return c.json(posts);
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-    return c.json({ message: 'Failed to fetch posts' }, 500);
+  } catch (error: unknown) {
+    return handleError(c, error, '投稿の取得に失敗しました');
   }
 });
 
 // GET /posts/:id - Get a post by ID
-postRoutes.openapi(getPostRoute, async (c: any) => {
+postRoutes.openapi(getPostRoute, async (c: Context) => {
   const { id } = c.req.valid('param');
 
   try {
@@ -51,18 +51,17 @@ postRoutes.openapi(getPostRoute, async (c: any) => {
     });
 
     if (!post) {
-      return c.json({ message: 'Post not found' }, 404);
+      return c.json({ message: '投稿が見つかりません' }, 404);
     }
     
     return c.json(post);
-  } catch (error) {
-    console.error(`Error fetching post ${id}:`, error);
-    return c.json({ message: 'Failed to fetch post' }, 500);
+  } catch (error: unknown) {
+    return handleError(c, error, `投稿 ${id} の取得に失敗しました`);
   }
 });
 
 // POST /posts - Create a new post
-postRoutes.openapi(createPostRoute, async (c: any) => {
+postRoutes.openapi(createPostRoute, async (c: Context) => {
   const data = c.req.valid('json');
 
   try {
@@ -72,7 +71,7 @@ postRoutes.openapi(createPostRoute, async (c: any) => {
     });
 
     if (!author) {
-      return c.json({ message: 'Author not found' }, 400);
+      return c.json({ message: '指定された著者が見つかりません' }, 400);
     }
 
     const newPost = await prisma.post.create({
@@ -81,14 +80,13 @@ postRoutes.openapi(createPostRoute, async (c: any) => {
     });
 
     return c.json(newPost, 201);
-  } catch (error) {
-    console.error('Error creating post:', error);
-    return c.json({ message: 'Failed to create post' }, 500);
+  } catch (error: unknown) {
+    return handleError(c, error, '投稿の作成に失敗しました');
   }
 });
 
 // PATCH /posts/:id - Update a post
-postRoutes.openapi(updatePostRoute, async (c: any) => {
+postRoutes.openapi(updatePostRoute, async (c: Context) => {
   const { id } = c.req.valid('param');
   const data = c.req.valid('json');
 
@@ -99,7 +97,7 @@ postRoutes.openapi(updatePostRoute, async (c: any) => {
     });
 
     if (!postExists) {
-      return c.json({ message: 'Post not found' }, 404);
+      return c.json({ message: '投稿が見つかりません' }, 404);
     }
 
     const updatedPost = await prisma.post.update({
@@ -109,14 +107,13 @@ postRoutes.openapi(updatePostRoute, async (c: any) => {
     });
 
     return c.json(updatedPost);
-  } catch (error) {
-    console.error(`Error updating post ${id}:`, error);
-    return c.json({ message: 'Failed to update post' }, 500);
+  } catch (error: unknown) {
+    return handleError(c, error, `投稿 ${id} の更新に失敗しました`);
   }
 });
 
 // DELETE /posts/:id - Delete a post
-postRoutes.openapi(deletePostRoute, async (c: any) => {
+postRoutes.openapi(deletePostRoute, async (c: Context) => {
   const { id } = c.req.valid('param');
 
   try {
@@ -126,7 +123,7 @@ postRoutes.openapi(deletePostRoute, async (c: any) => {
     });
 
     if (!postExists) {
-      return c.json({ message: 'Post not found' }, 404);
+      return c.json({ message: '投稿が見つかりません' }, 404);
     }
 
     // Delete the post
@@ -134,9 +131,8 @@ postRoutes.openapi(deletePostRoute, async (c: any) => {
       where: { id },
     });
 
-    return c.json({ message: 'Post deleted successfully' });
-  } catch (error) {
-    console.error(`Error deleting post ${id}:`, error);
-    return c.json({ message: 'Failed to delete post' }, 500);
+    return c.json({ message: '投稿が正常に削除されました' });
+  } catch (error: unknown) {
+    return handleError(c, error, `投稿 ${id} の削除に失敗しました`);
   }
 });

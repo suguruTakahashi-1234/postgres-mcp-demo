@@ -1,4 +1,4 @@
-// @ts-ignore - Vitest最新バージョンでのインポート
+// @ts-expect-error - Vitest最新バージョンでのインポート
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { postRoutes } from './posts';
 import prisma from '../lib/prisma';
@@ -130,7 +130,7 @@ describe('Post Routes', () => {
       
       // Assert
       expect(res.status).toBe(500);
-      expect(data).toEqual({ message: 'Failed to fetch posts' });
+      expect(data).toEqual({ message: '投稿の取得に失敗しました' });
     });
   });
 
@@ -173,7 +173,7 @@ describe('Post Routes', () => {
       
       // Assert
       expect(res.status).toBe(404);
-      expect(data).toEqual({ message: 'Post not found' });
+      expect(data).toEqual({ message: '投稿が見つかりません' });
     });
   });
 
@@ -236,7 +236,7 @@ describe('Post Routes', () => {
       
       // Assert
       expect(res.status).toBe(400);
-      expect(data).toEqual({ message: 'Author not found' });
+      expect(data).toEqual({ message: '指定された著者が見つかりません' });
       expect(prisma.post.create).not.toHaveBeenCalled();
     });
   });
@@ -300,7 +300,7 @@ describe('Post Routes', () => {
       
       // Assert
       expect(res.status).toBe(404);
-      expect(data).toEqual({ message: 'Post not found' });
+      expect(data).toEqual({ message: '投稿が見つかりません' });
       expect(prisma.post.update).not.toHaveBeenCalled();
     });
   });
@@ -336,7 +336,7 @@ describe('Post Routes', () => {
       
       // Assert
       expect(res.status).toBe(200);
-      expect(data).toEqual({ message: 'Post deleted successfully' });
+      expect(data).toEqual({ message: '投稿が正常に削除されました' });
       expect(prisma.post.delete).toHaveBeenCalledWith({
         where: { id: postId },
       });
@@ -354,7 +354,7 @@ describe('Post Routes', () => {
       
       // Assert
       expect(res.status).toBe(404);
-      expect(data).toEqual({ message: 'Post not found' });
+      expect(data).toEqual({ message: '投稿が見つかりません' });
       expect(prisma.post.delete).not.toHaveBeenCalled();
     });
   });

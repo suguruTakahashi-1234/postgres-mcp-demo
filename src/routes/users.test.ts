@@ -1,4 +1,4 @@
-// @ts-ignore - Vitest最新バージョンでのインポート
+// @ts-expect-error - Vitest最新バージョンでのインポート
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { userRoutes } from './users';
 import prisma from '../lib/prisma';
@@ -48,7 +48,7 @@ describe('User Routes', () => {
       
       // Assert
       expect(res.status).toBe(500);
-      expect(data).toEqual({ message: 'Failed to fetch users' });
+      expect(data).toEqual({ message: 'ユーザー情報の取得に失敗しました' });
     });
   });
 
@@ -90,7 +90,7 @@ describe('User Routes', () => {
       
       // Assert
       expect(res.status).toBe(404);
-      expect(data).toEqual({ message: 'User not found' });
+      expect(data).toEqual({ message: 'ユーザーが見つかりません' });
     });
   });
 
@@ -142,7 +142,7 @@ describe('User Routes', () => {
       
       // Assert
       expect(res.status).toBe(400);
-      expect(data).toEqual({ message: 'A user with this email already exists' });
+      expect(data).toEqual({ message: 'このメールアドレスは既に使用されています' });
     });
   });
 
@@ -193,7 +193,7 @@ describe('User Routes', () => {
       
       // Assert
       expect(res.status).toBe(404);
-      expect(data).toEqual({ message: 'User not found' });
+      expect(data).toEqual({ message: 'ユーザーが見つかりません' });
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
   });
@@ -213,7 +213,7 @@ describe('User Routes', () => {
       
       // Assert
       expect(res.status).toBe(200);
-      expect(data).toEqual({ message: 'User deleted successfully' });
+      expect(data).toEqual({ message: 'ユーザーが正常に削除されました' });
       expect(prisma.user.delete).toHaveBeenCalledWith({
         where: { id: userId },
       });
@@ -231,7 +231,7 @@ describe('User Routes', () => {
       
       // Assert
       expect(res.status).toBe(404);
-      expect(data).toEqual({ message: 'User not found' });
+      expect(data).toEqual({ message: 'ユーザーが見つかりません' });
       expect(prisma.user.delete).not.toHaveBeenCalled();
     });
   });

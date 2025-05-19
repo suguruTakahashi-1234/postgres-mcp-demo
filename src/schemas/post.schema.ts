@@ -37,7 +37,7 @@ export const getPostsRoute = createRoute({
   request: {
     query: z.object({
       published: z.enum(['true', 'false']).optional(),
-      authorId: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),
+      authorId: z.string().optional().transform((val: string | undefined) => val ? parseInt(val, 10) : undefined),
     }),
   },
   responses: {
@@ -60,7 +60,7 @@ export const getPostRoute = createRoute({
   description: 'Retrieve a single post by its ID',
   request: {
     params: z.object({
-      id: z.string().transform((val) => parseInt(val, 10)),
+      id: z.string().transform((val: string) => parseInt(val, 10)),
     }),
   },
   responses: {
@@ -130,7 +130,7 @@ export const updatePostRoute = createRoute({
   description: 'Update a post with the provided data',
   request: {
     params: z.object({
-      id: z.string().transform((val) => parseInt(val, 10)),
+      id: z.string().transform((val: string) => parseInt(val, 10)),
     }),
     body: {
       content: {
@@ -180,7 +180,7 @@ export const deletePostRoute = createRoute({
   description: 'Delete a post by its ID',
   request: {
     params: z.object({
-      id: z.string().transform((val) => parseInt(val, 10)),
+      id: z.string().transform((val: string) => parseInt(val, 10)),
     }),
   },
   responses: {

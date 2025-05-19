@@ -62,7 +62,7 @@ export const getUserRoute = createRoute({
   description: 'Retrieve a single user by their ID',
   request: {
     params: z.object({
-      id: z.string().transform((val) => parseInt(val, 10)),
+      id: z.string().transform((val: string) => parseInt(val, 10)),
     }),
   },
   responses: {
@@ -132,7 +132,7 @@ export const updateUserRoute = createRoute({
   description: 'Update a user with the provided data',
   request: {
     params: z.object({
-      id: z.string().transform((val) => parseInt(val, 10)),
+      id: z.string().transform((val: string) => parseInt(val, 10)),
     }),
     body: {
       content: {
@@ -182,7 +182,7 @@ export const deleteUserRoute = createRoute({
   description: 'Delete a user by their ID',
   request: {
     params: z.object({
-      id: z.string().transform((val) => parseInt(val, 10)),
+      id: z.string().transform((val: string) => parseInt(val, 10)),
     }),
   },
   responses: {
